@@ -1,10 +1,55 @@
+const firebase = require('firebase');
+
+const config = {
+	apiKey: "AIzaSyDtwD8StzSnSh27q7KlTRnXyoRNGl_VPng",
+	authDomain: "prom-79c6c.firebaseapp.com",
+    databaseURL: "https://prom-79c6c.firebaseio.com",
+    storageBucket: "prom-79c6c.appspot.com",
+    messagingSenderId: "161943421263"
+};
+firebase.initializeApp(config);
+
 class NotesApp {
 
 	constructor(user=null) {
-		//initialises with  a user
+		//initialise with user = null
+		//user can use the class as a null user
+		//or signup/login to use the class as a registered user
 		this.user = user;
 		this.notesCount = 0;
 		this.notes = {};
+	}
+
+	signup({email, password}) {
+		//create a new user account
+		return firebase.auth().createUserWithEmailAndPassword(email, password)
+		.then((userObject) => {
+			this.user = userObject;
+			return "Signup Successful!"
+		}, (error) => {
+			return "Signup failed!";
+		});
+	}
+
+	login({email, password}) {
+		//login an existing user
+		return firebase.auth().signInWithEmailAndPassword(email, password)
+		.then((userObject) => {
+			this.user = userObject;
+			this.getNotesFromStore();
+			return "Login Successful!";
+		}, (error) => {
+			return "Login failed!";
+		});
+	}
+
+	getNotesFromStore() {
+		//Get personal notes from online store
+		const db = firebase.database();
+		db.ref('notes').orderByChild('userId').equalTo(this.user.uid)
+		.once('value', function(snapshot) {
+			Object.assign(this.notes, snapshot.val());
+		});
 	}
 
 	generateId(noteTopic) {
@@ -15,12 +60,12 @@ class NotesApp {
 		return noteId; 
 	}
 
-	createNote(noteTopic, noteContent) {
+	createNote({noteTopic, noteContent}) {
 		//create a note
 		let noteId = this.generateId(noteTopic);
 		let newNote = new note(noteId, noteTopic, noteContent);
 		this.notes[noteId] = newNote;
-		return Object.assign({}, newNote);
+		return {id: newNote.id, title: newNote.topic};
 	}
 
 	getNote(noteId) {
@@ -29,6 +74,7 @@ class NotesApp {
 	}
 
 	editNote(noteId, newNoteTopic=null, newNoteContent=null) {
+		//modify a note
 		if (newNoteTopic !== null) {
 			let Note = this.notes[noteId];
 			Note.topic = newNoteTopic;
@@ -45,12 +91,19 @@ class NotesApp {
 	}
 
 	getAllNotes(limit=null) {
+		//get all notes
 		let notesCopies = Object.assign({}, this.notes);
 		if (limit === null) {
 			return notesCopies;
 		}
 		else {
-			let notesArray = notesCopies.entries();
+			let notesArray = ((notesCopies) => {
+				let temp = [];
+				for (let item in notesCopies) {
+					temp.push([item, notesCopies[item]]);
+				}
+				return temp;
+			})(notesCopies);
 			let initialDataShown = notesArray.splice(0, limit);
 			this.currentQuery = {"unshownData": notesArray, "limit": limit };
 			return initialDataShown;
@@ -58,6 +111,8 @@ class NotesApp {
 	}
 
 	next() {
+		//display next set of notes
+		//For commands like getAllNotes and searchNote which have --limit
 		if (typeof this.currentQuery === 'undefined') {
 			return "Error! No subsistent query"
 		}
@@ -78,16 +133,11 @@ class NotesApp {
 	}
 }
 
-class note {
+class note { 
 	constructor(noteId, noteTopic, noteContent) {
 		this.id = noteId;
 		this.topic = noteTopic;
 		this.content = noteContent;
 	}
 }
-
-let newNotesApp = new NotesApp();
-let Note = newNotesApp.createNote('Test the notesapp', 'this is just a test');
-console.log(newNotesApp.notes);
-newNotesApp.editNote('Test-the-1', "Test the NotesApp class", "Like I said, this is just a test");
-console.log(newNotesApp.getAllNotes());
+module.exports = NotesApp;

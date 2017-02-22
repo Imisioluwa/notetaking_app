@@ -3,12 +3,11 @@
  - At the end of this task The Notes taking console application is expected to have the following functionalities:
   However, deliverables below have been implemented and can be utilized by the user now.
          
-
--  ###help 
+ ### help 
 - User can use the help keyword to search for instructions guiding the application using the HELP keyword.
           
 
-- ### exit 
+### exit 
 -User can exit from the application using the EXIT keyword. 
           
 
@@ -41,4 +40,4 @@
 ###export json, csv --
 -- User will be able to export notes in json or csv file format.
 ###syncnotes --
--- User will be able to write, store and retrieve notes from database.
+-- User will be able to write, store and retrieve notes from firebase.

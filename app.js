@@ -10,7 +10,7 @@ const config = {
 firebase.initializeApp(config);
 
 class NotesApp {
-
+     //Default arguement
 	constructor(user=null) {
 		//initialise with user = null
 		//user can use the class as a null user
@@ -52,20 +52,20 @@ class NotesApp {
 		});
 	}
 
-	generateId(noteTopic) {
+	generateId(noteTitle) {
 		//generate id for a new note
 		this.notesCount+=1;
-		let formatTopic = noteTopic.split(/\s+/).slice(0, 2).join('-');
+		let formatTopic = noteTitle.split(/\s+/).slice(0, 2).join('-');
 		let noteId = `${formatTopic}-${this.notesCount}`;
 		return noteId; 
 	}
 
-	createNote({noteTopic, noteContent}) {
+	createNote({noteTitle, noteContent}) {
 		//create a note
-		let noteId = this.generateId(noteTopic);
-		let newNote = new note(noteId, noteTopic, noteContent);
+		let noteId = this.generateId(noteTitle);
+		let newNote = new note(noteId, noteTitle, noteContent);
 		this.notes[noteId] = newNote;
-		return {id: newNote.id, title: newNote.topic};
+		return {id: newNote.id, title: newNote.title};
 	}
 
 	getNote(noteId) {
@@ -73,11 +73,11 @@ class NotesApp {
 		return Object.assign({}, this.notes[noteId]);
 	}
 
-	editNote(noteId, newNoteTopic=null, newNoteContent=null) {
+	editNote(noteId, newNoteTitle=null, newNoteContent=null) {
 		//modify a note
-		if (newNoteTopic !== null) {
+		if (newNoteTitle !== null) {
 			let Note = this.notes[noteId];
-			Note.topic = newNoteTopic;
+			Note.title = newNoteTitle;
 		}
 		if (newNoteContent !== null) {
 			this.notes[noteId].content = newNoteContent;
@@ -87,23 +87,25 @@ class NotesApp {
 
 	deleteNote(noteId) {
 		//delete a single note
+		let note = this.notes[noteId];
 		delete this.notes[noteId];
+		return {id: note.id, title: note.title};
 	}
 
 	getAllNotes(limit=null) {
 		//get all notes
-		let notesCopies = Object.assign({}, this.notes);
-		if (limit === null) {
-			return notesCopies;
+		let notesArray = ((notes) => {
+			let temp = [];
+			for (let item in notes) {
+				temp.push(notes[item]);
+			}
+			return temp;
+		})(this.notes);
+
+		if (limit === null || limit > notesArray.length) {
+			return notesArray;
 		}
-		else {
-			let notesArray = ((notesCopies) => {
-				let temp = [];
-				for (let item in notesCopies) {
-					temp.push([item, notesCopies[item]]);
-				}
-				return temp;
-			})(notesCopies);
+		else {	
 			let initialDataShown = notesArray.splice(0, limit);
 			this.currentQuery = {"unshownData": notesArray, "limit": limit };
 			return initialDataShown;
@@ -113,8 +115,8 @@ class NotesApp {
 	next() {
 		//display next set of notes
 		//For commands like getAllNotes and searchNote which have --limit
-		if (typeof this.currentQuery === 'undefined') {
-			return "Error! No subsistent query"
+		if (typeof this.currentQuery === 'undefined' || this.currentQuery === null) {
+			return "Error! No pending data to fetch"
 		}
 		else {
 			let remainingData = this.currentQuery["unshownData"];
@@ -123,21 +125,23 @@ class NotesApp {
 				return remainingData.splice(0, limit);
 			}
 			else {
+				this.currentQuery = null;
 				return remainingData;
 			}
 		}
 	}
 
-	searchNote(queryString) {
+	searchNote(queryString, limit) {
 		//to be implemented
 	}
 }
 
 class note { 
-	constructor(noteId, noteTopic, noteContent) {
+	constructor(noteId, noteTitle, noteContent) {
 		this.id = noteId;
-		this.topic = noteTopic;
+		this.title = noteTitle;
 		this.content = noteContent;
 	}
 }
+
 module.exports = NotesApp;

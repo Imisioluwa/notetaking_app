@@ -91,6 +91,8 @@ class CLI {
 		this.vorpal.log("Note id: "+chalk.white(note.id));
 		//output note title
 		this.vorpal.log("Note title: " +chalk.white(note.title));
+		//reminder to syncnote before exit
+		this.vorpal.log("You should synchronize your notes before exit. Unsynchronized notes are lost. To synchronize, enter 'syncnotes' ");
 	}
 
 	viewNoteOutput(note) {
@@ -101,6 +103,8 @@ class CLI {
 		this.vorpal.log("Note title: "+chalk.white(note.title)+"\n");
 		//ouput note content
 		this.vorpal.log(chalk.white(note.content));
+		//reminder to syncnote before exit
+		this.vorpal.log("You should synchronize your notes before exit. Unsynchronized notes are lost. To synchronize, enter 'syncnotes' ");
 	}
 
 	deleteNoteOutput(note) {
@@ -110,6 +114,8 @@ class CLI {
 		this.vorpal.log("Note id: "+chalk.red(note.id));
 		//output node title
 		this.vorpal.log("Note title: "+chalk.red(note.title));
+		//reminder to syncnote before exit
+		this.vorpal.log("You should synchronize your notes before exit. Unsynchronized notes are lost. To synchronize, enter 'syncnotes' ");
 	}
 
 	listNotesOutput(notes) {
@@ -125,6 +131,8 @@ class CLI {
 				this.vorpal.log("Note title: "+chalk.white(note.title)+"\n");
 			}
 		}
+		//reminder to syncnote before exit
+		this.vorpal.log("You should synchronize your notes before exit. Unsynchronized notes are lost. To synchronize, enter 'syncnotes' ");
 	}
 }
 

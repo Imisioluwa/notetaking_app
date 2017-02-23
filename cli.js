@@ -11,7 +11,7 @@ class CLI {
 		//clear console
 		clear();
 		//print out an ASCII text banner
-		this.vorpal.log(chalk.bgMagenta.white(figlet.textSync('WriteSmart')));
+		this.vorpal.log(chalk.bgMagenta.white(figlet.textSync('writeSmart')));
 		//call the welcomeClient method
 		this.welcomeClient();
 	}
@@ -53,8 +53,8 @@ class CLI {
 		});
 	}
 
-	loginSignupOutput(message) {
-		//Outputs error or success message for login and signup operations
+	outputMessage(message) {
+		//Outputs error or success message
 		if (message.includes("Success")) {
 			//print out success message in green
 			this.vorpal.log(chalk.green(message));

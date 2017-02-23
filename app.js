@@ -1,16 +1,16 @@
 const firebase = require('firebase');
 
 const config = {
-	apiKey: "AIzaSyDtwD8StzSnSh27q7KlTRnXyoRNGl_VPng",
-	authDomain: "prom-79c6c.firebaseapp.com",
-    databaseURL: "https://prom-79c6c.firebaseio.com",
-    storageBucket: "prom-79c6c.appspot.com",
-    messagingSenderId: "161943421263"
+    apiKey: "AIzaSyCCrecOwhstv7Z_q-tyjCz21hopgZCB4i0",
+    authDomain: "notesconsole-e0f14.firebaseapp.com",
+    databaseURL: "https://notesconsole-e0f14.firebaseio.com",
+    storageBucket: "notesconsole-e0f14.appspot.com",
+    messagingSenderId: "1033480285886"
 };
 firebase.initializeApp(config);
 
 class NotesApp {
-     //Default arguement
+
 	constructor(user=null) {
 		//initialise with user = null
 		//user can use the class as a null user
@@ -43,12 +43,26 @@ class NotesApp {
 		});
 	}
 
+	logout() {
+		//logout a signed-in user.
+		return firebase.auth().signOut()
+		.then(() => {
+			this.user = null;
+			return "Logout Successful!";
+		}, (error) => {
+			return "Logout failed";
+		});
+	}
+
 	getNotesFromStore() {
 		//Get personal notes from online store
 		const db = firebase.database();
-		db.ref('notes').orderByChild('userId').equalTo(this.user.uid)
-		.once('value', function(snapshot) {
-			Object.assign(this.notes, snapshot.val());
+		db.ref(`${this.user.uid}/notes`)
+		.once('value', (snapshot) => {
+			if (snapshot.exists()) {
+				Object.assign(this.notes, snapshot.val());
+				this.notesCount = snapshot.numChildren();
+			}
 		});
 	}
 
@@ -129,6 +143,20 @@ class NotesApp {
 				return remainingData;
 			}
 		}
+	}
+
+	syncNotes() {
+		//Synchronize notes with online datastore
+		if (this.user === null) {
+			return firebase.Promise.resolve("Login to synchronise notes. New user? Signup");
+		}
+		const db = firebase.database();
+		return db.ref(`${this.user.uid}/notes`).update(this.notes)
+		.then(() => {
+			return "Synchronization Complete:::::::Success";
+		}, (error) => {
+			return "Synchronization Failed::::::::";
+		});
 	}
 
 	searchNote(queryString, limit) {

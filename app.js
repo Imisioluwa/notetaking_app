@@ -35,6 +35,7 @@ class NotesApp {
 		//login an existing user
 		return firebase.auth().signInWithEmailAndPassword(email, password)
 		.then((userObject) => {
+			this.notes = {};
 			this.user = userObject;
 			this.getNotesFromStore();
 			return "Login Successful!";
@@ -116,6 +117,10 @@ class NotesApp {
 			return temp;
 		})(this.notes);
 
+		return this.applyLimit(limit, notesArray);
+	}
+
+	applyLimit(limit, notesArray) {
 		if (limit === null || limit > notesArray.length) {
 			return notesArray;
 		}
@@ -151,7 +156,7 @@ class NotesApp {
 			return firebase.Promise.resolve("Login to synchronise notes. New user? Signup");
 		}
 		const db = firebase.database();
-		return db.ref(`${this.user.uid}/notes`).update(this.notes)
+		return db.ref(`${this.user.uid}/notes`).set(this.notes)
 		.then(() => {
 			return "Synchronization Complete:::::::Success";
 		}, (error) => {
@@ -159,8 +164,39 @@ class NotesApp {
 		});
 	}
 
-	searchNote(queryString, limit) {
-		//to be implemented
+	searchNote(queryString, limit=null) {
+		//get all notes that match the querystring
+		let matchNotesArray = [];
+		let matched = /^(\w{6,})\.contains\.(.+)$/.exec(queryString);
+		let searchPattern = this.tagsToPatterns(matched[2].split(','));
+		for (let noteid in this.notes) {
+			let note = this.notes[noteid];
+			if (matched[1].includes("notetitle") && matched[1].includes("notecontent")) {
+				if (searchPattern.test(note.title) && searchPattern.test(note.content)) {
+					matchNotesArray.push(note);
+				}
+			}
+			else if (matched[1].includes("notetitle")) {
+				if (searchPattern.test(note.title)) {
+					matchNotesArray.push(note);
+				}
+			}
+			else {
+				if (searchPattern.test(note.content)) {
+					matchNotesArray.push(note);
+				}
+			}
+		}
+		return this.applyLimit(limit, matchNotesArray);
+	}
+
+	tagsToPatterns(tagArray) {
+		let regexPattern = String.raw`^`;
+		for (let searchTag of tagArray) {
+			regexPattern += String.raw`(?=[^]*\b${searchTag}\b)`;
+		}
+		regexPattern += String.raw`[^]*$`
+		return new RegExp(regexPattern);
 	}
 }
 

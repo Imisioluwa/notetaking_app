@@ -96,6 +96,25 @@ vorpal
 });
 
 vorpal
-.delimiter('WriteSmart >>> ')
+.command('searchnotes <query_string>', "Search all notes that match query string")
+.option('-l, --limit <num>', "Number of items to display on a page at once")
+.validate((args) => {
+	if (/(notetitle)?_?(notecontent)?/.test(args.query_string)) {
+		if (args.options.limit) {
+			return Number.isInteger(args.options.limit) || "-----limit should be an integer\n";
+		}
+		return true;	
+	}
+	else {
+		return "-----Unstructured query format\n";
+	}
+})
+.action((args, cb) => {
+	cli.listNotesOutput(NoteApp.searchNote(args.query_string, args.options.limit));
+	cb();
+});
+
+vorpal
+.delimiter('writeSmart >>> ')
 .show();
 

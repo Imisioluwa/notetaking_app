@@ -8,11 +8,11 @@
   required to type signup. After signup successful, the user will type login after which he/she can take 
   notes by typing createnote.
          
- ### help 
+ ###help 
 - User can use the help keyword to search for instructions guiding the application using the HELP keyword.
           
 
-### exit 
+###exit 
 -User can exit from the application using the EXIT keyword. 
           
 
@@ -38,11 +38,15 @@
 ###syncnotes --
 -- User can write, store and retrieve notes from firebase.
 
+###searchnote ---
+-- User will be able to search for notes with keyword using searchnotes <notetitle.contains.('any word in the title')>
+   or searchnotes <notecontent.contains('any word in the title')> or searchnotes <notetitle_notecontent.contains('any word in the title')>
+
+
+
     -------------------------------------------------------------------------------------
 
-
-    DELIVERABLES ACTIVELY WORKING ON(IN PROGRESS)
-###searchnote ---
--- User will be able to search for notes with keyword
+    
+   
 ###export json, csv --
 -- User will be able to export notes in json or csv file format.

@@ -1,7 +1,12 @@
 ### notetaking_app(WRITESMART)
 
- - At the end of this task The Notes taking console application is expected to have the following functionalities:
-  However, deliverables below have been implemented and can be utilized by the user now.
+  At the end of this task The Notes taking console application is expected to have the following functionalities:
+  However, deliverables below have been implemented and can be utilized by the user now. A user can choose
+  either to create account on the Note taking application in order to create note or not.
+
+  At the initial phase if the user choose to create account on the note taking application. The user is 
+  required to type signup. After signup successful, the user will type login after which he/she can take 
+  notes by typing createnote.
          
  ### help 
 - User can use the help keyword to search for instructions guiding the application using the HELP keyword.
@@ -30,6 +35,8 @@
 ###next 
 - User can type next to display the remaining notes.
 
+###syncnotes --
+-- User can write, store and retrieve notes from firebase.
 
     -------------------------------------------------------------------------------------
 
@@ -39,5 +46,3 @@
 -- User will be able to search for notes with keyword
 ###export json, csv --
 -- User will be able to export notes in json or csv file format.
-###syncnotes --
--- User will be able to write, store and retrieve notes from firebase.

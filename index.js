@@ -115,6 +115,15 @@ vorpal
 });
 
 vorpal
+.command('exportnotes', "Export notes as json file")
+.action((args, cb) => {
+	NoteApp.exportNotes((message) => {
+		cli.outputMessage(message);
+		cb();
+	});
+});
+
+vorpal
 .delimiter('writeSmart >>> ')
 .show();
 
